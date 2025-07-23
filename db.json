@@ -1,0 +1,16 @@
+{
+  "goals": [
+    {
+      "id": 1,
+      "name": "Travel Fund - Japan",
+      "savedAmount": 3200,
+      "targetAmount": 5000
+    },
+    {
+      "id": 2,
+      "name": "Emergency Fund",
+      "savedAmount": 7500,
+      "targetAmount": 10000
+    }
+  ]
+}

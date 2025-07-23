@@ -1,23 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
 
 function App() {
+  const [goals, setGoals] = useState([]);
+
+  useEffect(() => {
+    fetch("/goals") // Proxy handles the domain
+      .then(res => res.json())
+      .then(data => setGoals(data))
+      .catch(err => console.error("Fetch error:", err));
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Smart Goal Planner</h1>
+      <ul>
+        {goals.map(goal => (
+          <li key={goal.id}>
+            <strong>{goal.name}</strong> - ${goal.savedAmount} / ${goal.targetAmount}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
