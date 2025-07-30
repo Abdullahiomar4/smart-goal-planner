@@ -1,14 +1,25 @@
-import React from "react";
-import GoalCard from "./GoalCard";
+import React from 'react'
+import GoalItem from './GoalItem'
 
-function GoalList({ goals }) {
+const GoalList = ({ goals, deleteGoal, startEditing, updateProgress }) => {
+  if (goals.length === 0) {
+    return <div className="no-goals">No goals yet. Add your first SMART goal!</div>
+  }
+
   return (
     <div className="goal-list">
+      <h2>Your SMART Goals</h2>
       {goals.map((goal) => (
-        <GoalCard key={goal.id} goal={goal} />
+        <GoalItem
+          key={goal.id}
+          goal={goal}
+          deleteGoal={deleteGoal}
+          startEditing={startEditing}
+          updateProgress={updateProgress} 
+        />
       ))}
     </div>
-  );
+  )
 }
 
-export default GoalList;
+export default GoalList

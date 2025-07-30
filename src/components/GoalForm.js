@@ -1,102 +1,123 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 
-function GoalForm({ onAddGoal }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    targetAmount: "",
-    savedAmount: "",
-    deadline: "",
+const GoalForm = ({ addGoal, updateGoal, editingGoal }) => {
+  const [goal, setGoal] = useState({
+    name: '',
+    targetAmount: '',
+    category: '',
+    deadline: '',
   });
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  }
+  useEffect(() => {
+    if (editingGoal) {
+      setGoal(editingGoal);
+    } else {
+      setGoal({
+        name: '',
+        targetAmount: '',
+        category: '',
+        deadline: '',
+      });
+    }
+  }, [editingGoal]);
 
-  function handleSubmit(e) {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setGoal((prevGoal) => ({
+      ...prevGoal,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:4001/goals", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...formData,
-        targetAmount: +formData.targetAmount,
-        savedAmount: +formData.savedAmount,
-      }),
-    })
-      .then((res) => res.json())
-      .then((newGoal) => {
-        onAddGoal(newGoal);
-        setFormData({
-          name: "",
-          category: "",
-          targetAmount: "",
-          savedAmount: "",
-          deadline: "",
-        });
-      })
-      .catch((err) => console.error("Failed to add goal:", err));
-  }
+    const { name, targetAmount, category, deadline } = goal;
+    if (!name || !targetAmount || !category || !deadline) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    if (editingGoal) {
+      updateGoal(goal);
+    } else {
+      addGoal(goal);
+    }
+
+    // Reset form
+    setGoal({
+      name: '',
+      targetAmount: '',
+      category: '',
+      deadline: '',
+    });
+  };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 mb-6 max-w-md mx-auto p-4 bg-white rounded-lg shadow"
-    >
-      <input
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        placeholder="Goal Name"
-        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        required
-      />
-      <input
-        name="category"
-        value={formData.category}
-        onChange={handleChange}
-        placeholder="Category"
-        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        required
-      />
-      <input
-        name="targetAmount"
-        value={formData.targetAmount}
-        onChange={handleChange}
-        type="number"
-        placeholder="Target Amount"
-        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        required
-      />
-      <input
-        name="savedAmount"
-        value={formData.savedAmount}
-        onChange={handleChange}
-        type="number"
-        placeholder="Saved Amount"
-        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        required
-      />
-      <input
-        name="deadline"
-        value={formData.deadline}
-        onChange={handleChange}
-        type="date"
-        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        required
-      />
-      <button
-        type="submit"
-        className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-      >
-        Add Goal
+    <form onSubmit={handleSubmit} className="goal-form">
+      <h2>{editingGoal ? 'Edit Goal' : 'Add New Goal'}</h2>
+
+      <div className="form-group">
+        <label>Goal Name</label>
+        <input
+          type="text"
+          name="name"
+          value={goal.name}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Target Amount ($)</label>
+        <input
+          type="number"
+          name="targetAmount"
+          value={goal.targetAmount}
+          onChange={handleChange}
+          min="0"
+          step="0.01"
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Category</label>
+        <select
+          name="category"
+          value={goal.category}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select a category</option>
+          <option value="Travel">Travel</option>
+          <option value="Emergency">Emergency</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Real Estate">Real Estate</option>
+          <option value="Vehicle">Vehicle</option>
+          <option value="Education">Education</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Retirement">Retirement</option>
+          <option value="Home">Home</option>
+        </select>
+      </div>
+
+      <div className="form-group">
+        <label>Deadline</label>
+        <input
+          type="date"
+          name="deadline"
+          value={goal.deadline}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <button type="submit" className="submit-btn">
+        {editingGoal ? 'Update Goal' : 'Add Goal'}
       </button>
     </form>
   );
-}
+};
 
 export default GoalForm;
